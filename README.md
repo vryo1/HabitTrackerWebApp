@@ -39,10 +39,12 @@ cd HabitTrackerWebApp
 ```
 pip install -r requirements.txt
 ```
-3. **Set up local database** Make sure PostgreSQL is running, then create a database and user matching the credentials in `settings.py`
-```
-CREATE USER team322 WITH PASSWORD 'pass322';
-CREATE DATABASE habittracker OWNER team322;
+3. **Set up local database (PostgreSQL)**
+Make sure PostgreSQL is running, then create your own database user and password (do not use shared hardcoded credentials).
+
+```sql
+CREATE USER your_db_user WITH PASSWORD 'your_strong_password';
+CREATE DATABASE habittracker OWNER your_db_user;
 ```
 4. **Apply datbase migrations**
 ```
