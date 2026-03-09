@@ -15,13 +15,11 @@ which habits users might be struggling on and which habits they do a good job of
 secondary menu will then allow users to create and customize new habits, as well as manage
 and adjust the existing ones.
 ## Installation
-As of now, TheDailyNudge-HabitTrackerWebApp is a Django web app backed by PostgreSQL.
+As of now, TheDailyNudge-HabitTrackerWebApp is a Django web app backed by PostgreSQL hosteed on Railway.
 ### Prerequisites
 - Git
 - Python 3.12+ and pip
 - A virtual environment tool (recommended: built-in venv)
-- PostgreSQL running locally (default port 5432)
-- A database/user matching current updated local config
 ### Add-ons 
 - Django==6.0.2: Core web framework for routing, templates, models, and auth.
 - psycopg2-binary==2.9.11: PostgreSQL adapter used by Django.
@@ -35,18 +33,26 @@ As of now, TheDailyNudge-HabitTrackerWebApp is a Django web app backed by Postgr
 git clone https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp.git
 cd HabitTrackerWebApp
 ```
-2. **Install dependencies**
+2. **Create and activate virtual environment**
+```
+python -m venv venv
+.\venv\Scripts\Activate.ps1  (Windows)
+source venv/bin/activate     (Mac/Linux)
+```
+3. **Install dependencies**
 ```
 pip install -r requirements.txt
 ```
-3. **Set up local database (PostgreSQL)**
-Make sure PostgreSQL is running, then create your own database user and password (do not use shared hardcoded credentials).
-
-```sql
-CREATE USER your_db_user WITH PASSWORD 'your_strong_password';
-CREATE DATABASE habittracker OWNER your_db_user;
+4. **Set up environment variables**
 ```
-4. **Apply datbase migrations**
+cp .env.example .env
+```
+Edit `.env` and fill in:
+```
+SECRET_KEY=your-own-long-random-string
+DATABASE_URL=ask-a-team-member-for-the-railway-url
+```
+5. **Apply datbase migrations**
 ```
 cd client
 python manage.py migrate
@@ -67,6 +73,6 @@ The app will be available at `http://127.0.0.1:8000/`
 **Manage Habits Page** - Use this page to add new habits to the tracker. Press "Add Habit" then fill out the habit details and press "Add" to save it. The habit will then appear on the dashboard.
 
 ## Known Problems
-**PostgreSQL must be running locally** - The app requires a local PostgreSQL instance to be running in order to connect to the database. If you see a database connection error on startup, make sure PostgreSQL is installed and running on your machine before launching the app.
+
 
 ## Additional Documentation
