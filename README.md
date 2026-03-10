@@ -15,7 +15,7 @@ which habits users might be struggling on and which habits they do a good job of
 secondary menu will then allow users to create and customize new habits, as well as manage
 and adjust the existing ones.
 ## Installation
-As of now, TheDailyNudge-HabitTrackerWebApp is a Django web app backed by PostgreSQL hosteed on Railway.
+As of now, TheDailyNudge-HabitTrackerWebApp is a Django web app backed by PostgreSQL hosted on Supabase.
 ### Prerequisites
 - Git
 - Python 3.12+ and pip
@@ -50,7 +50,7 @@ cp .env.example .env
 Edit `.env` and fill in:
 ```
 SECRET_KEY=your-own-long-random-string
-DATABASE_URL=ask-a-team-member-for-the-railway-url
+DATABASE_URL=ask-a-team-member-for-the-supabase-url
 ```
 5. **Apply datbase migrations**
 ```
