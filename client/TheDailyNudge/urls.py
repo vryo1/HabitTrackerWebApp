@@ -26,6 +26,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('managehabits/', views.manage_habits, name='managehabits'),
-    path('managehabits/edit/<int:habit_id>/', views.edit_habit, name='edithabit'),
-    path('managehabits/delete/<int:habit_id>/', views.delete_habit, name='deletehabit'),
+    path('managehabits/edit/<int:habit_id>/', views.edit_habit, name='edit_habit'),
+    path('managehabits/delete/<int:habit_id>/', views.delete_habit, name='delete_habit'),
 ]

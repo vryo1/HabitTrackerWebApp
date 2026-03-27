@@ -34,10 +34,61 @@
         .close:hover {
             color: red;
         }
+
+        .habit-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .habit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+        }
+        
+        .habit-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        
     </style>
 </head>
 
 <body>
+
+<!-- Habit List -->
+<h2>Your Habits</h2>
+{% if habits %}
+<ul class="habit-list">
+    {% for habit in habits %}
+    <li class="habit-item">
+        <span><strong>{{ habit.name }}</strong> - every {{ habit.frequency }} day(s)</span>
+        <div class="habit-actions">
+            <button onclick="openEditModal(this)" 
+                    data-url="{% url 'edit_habit' habit.id %}"
+                    data-name="{{ habit.name|escapejs }}"
+                    data-frequency="{{ habit.frequency }}">
+                Edit
+            </button>
+            <form method="POST" action="{% url 'delete_habit' habit.id %}"
+                onsubmit="return confirm('Delete {{ habit.name|escapejs }}?')">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+{% else %}
+    <p>No habits yet. Add one below!</p>
+{% endif %}
 
 <!-- Django Messages -->
 {% if messages %}
@@ -53,7 +104,7 @@
 <!-- Add Habit Button -->
 <p><button id="openModal">Add Habit</button><p>
 
-<!-- Modal -->
+<!-- Add Habit Modal -->
 <div id="habitModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
@@ -73,10 +124,33 @@
     </div>
 </div>
 
+<!-- Edit Habit Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeEditModal">&times;</span>
+        <h2>Edit Habit</h2>
+
+        <form method="POST" id="editForm" action="">
+            {% csrf_token %}
+
+            <label>Habit Name:</label><br>
+            <input type="text" name="name" id="editName" required><br><br>
+            
+            <label>Frequency (1 = daily, 7 = weekly):</label><br>
+            <input type="number" name="frequency" id="editFrequency" min="1" required><br><br>
+            
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</div>
+
 <script>
     const modal = document.getElementById("habitModal");
     const openBtn = document.getElementById("openModal");
     const closeBtn = document.getElementById("closeModal");
+
+    const editModal = document.getElementById("editModal");
+    const closeEditBtn = document.getElementById("closeEditModal");
 
     openBtn.onclick = function() {
         modal.style.display = "block";
@@ -85,12 +159,28 @@
     closeBtn.onclick = function() {
         modal.style.display = "none";
     }
+    closeEditBtn.onclick = function() {
+        editModal.style.display = "none"
+    }
 
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
         }
+        if (event.target == editModal) {
+            editModal.style.display = "none";
+        }
     }
+
+
+
+    function openEditModal(btn) {
+        document.getElementById("editForm").action = btn.dataset.url;
+        document.getElementById("editName").value = btn.dataset.name;
+        document.getElementById("editFrequency").value = btn.dataset.frequency;
+        editModal.style.display = "block";
+    }
+
 </script>
 
 <a href="{% url 'dashboard' %}">Dashboard</a>
