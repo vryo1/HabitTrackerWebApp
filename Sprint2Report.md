@@ -4,6 +4,10 @@
 * Feature 1: Display habits on the manage habits page
 * Feature 2: Allow users to edit and delete existing habits
 * Feature 3: Polished manage habits page
+* Feature 4: Hosted PostgreSQL database remotely on Supabase
+* Feature 5: Habit completion tracking with streak updates
+* Feature 6: Registered Habit and Completion models in Django admin panel
+* Feature 7: Secured credentials using envrionment variables
   
 ## Work Summary (Developer Facing)
 Provide a one paragraph synposis of what your team accomplished this sprint. Don't
@@ -25,6 +29,7 @@ Here are links to the issues that we completed in this sprint:
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/13
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/16
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/17
+* https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/14
   
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint:
@@ -38,6 +43,8 @@ sprint, for quality:
 * [views.py](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/Backend/views.py )
 * [managehabits.html](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/templates/managehabits.html)
 * [urls.py](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/TheDailyNudge/urls.py)
+* [admin.py](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/Backend/admin.py)
+* [dashboard.html](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/templates/dashboard.html)
 
 ## Retrospective Summary
 Here's what went well:
