@@ -7,24 +7,17 @@
 * Feature 4: Hosted PostgreSQL database remotely on Supabase
 * Feature 5: Habit completion tracking with streak updates
 * Feature 6: Registered Habit and Completion models in Django admin panel
-* Feature 7: Secured credentials using envrionment variables
+* Feature 7: Secured credentials using environment variables
 * Feature 8: Updated signup UI
   
 ## Work Summary (Developer Facing)
-Provide a one paragraph synposis of what your team accomplished this sprint. Don't
-repeat the "What's New" list of features. Instead, help the instructor understand
-how you went about the work described there, any barriers you overcame, and any
-significant learnings for your team.
+On the backend, habit completion tracking was implemented allowing users to mark habits as done for the day, with duplicate prevention handled through Django's get_or_create method. 
+The database was migrated from local PostgreSQL to a remotely hosted Supabase instance, eliminating the local set up requirement for all team members. 
+Habit and Completion models were also registered in the Django admin panel for easier data management. 
 
 ## Unfinished Work
-If applicable, explain the work you did not finish in this sprint. For issues/user
-stories in the current sprint that have not been closed, (a) any progress toward
-completion of the issues has been clearly tracked (by checking the checkboxes of
-acceptance criteria), (b) a comment has been added to the issue to explain why the
-issue could not be completed (e.g., "we ran out of time" or "we did not anticipate
-it would be so much work"), and (c) the issue is added to a subsequent sprint, so
-that it can be addressed later.
-
+* All sprint 2 issues were completed.
+  
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/13
@@ -34,10 +27,7 @@ Here are links to the issues that we completed in this sprint:
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/15
   
 ## Incomplete Issues/User Stories
-Here are links to issues we worked on but did not complete in this sprint:
-* URL of issue 1 <<One sentence explanation of why issue was not completed>>
-* URL of issue 2 <<One sentence explanation of why issue was not completed>>
-* URL of issue n <<One sentence explanation of why issue was not completed>>
+* No incomplete issues for this sprint. All issues opened during Sprint 2 were completed and closed before the sprint deadline.
 
 ## Code Files for Review
 Please review the following code files, which were actively developed during this
@@ -52,15 +42,16 @@ sprint, for quality:
 ## Retrospective Summary
 Here's what went well:
 * We coordinated backend auth logic and frontend template updates early, which made testing and integration faster.
-* Item 2
-* Item x
+* Successfully migrated database to Supabase eliminating local setup requirement.
+* Habit completion tracking implemented.
+* Django admin panel now shows Habit and Completion models for easier debugging.
 
 Here's what we'd like to improve:
-* More timely commits every week
+* More timely and frequent commits throughout the sprint.
 * Security upgrades
-* Item x
+* Start on issues earlier
 
 Here are changes we plan to implement in the next sprint:
 * Weekly commits
-* Heat tracker map 
-* Item x
+* Heatmap visualization for habit completion history 
+* Start testing features
