@@ -30,6 +30,7 @@ Here are links to the issues that we completed in this sprint:
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/16
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/17
 * https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/14
+* https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/issues/15
   
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint:
