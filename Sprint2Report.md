@@ -46,6 +46,7 @@ sprint, for quality:
 * [urls.py](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/TheDailyNudge/urls.py)
 * [admin.py](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/Backend/admin.py)
 * [dashboard.html](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/templates/dashboard.html)
+* [signup.html](https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp/blob/main/client/templates/signup.html)
 
 ## Retrospective Summary
 Here's what went well:
