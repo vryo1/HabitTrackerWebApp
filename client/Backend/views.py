@@ -138,3 +138,18 @@ def delete_habit(request, habit_id):
         messages.success(request, "Habit deleted successfully!")
 
     return redirect('managehabits')
+
+@login_required(login_url='login')
+def complete_habit(request, habit_id):
+    habit = get_object_or_404(Habit, id =habit_id, user=request.user)
+
+    if request.method == 'POST':
+        today = date.today()
+        completion, created = Completion.objects.get_or_create(habit=habit, date=today) #prevent duplicates
+        if created : 
+            messages.success(request, f"{habit.name} marked as complete!")
+        else:
+            messages.success(request, f"{habit.name} already completed today.")
+    
+    return redirect('dashboard')
+
