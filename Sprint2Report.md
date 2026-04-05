@@ -56,10 +56,10 @@ Here's what went well:
 
 Here's what we'd like to improve:
 * More timely commits every week
-* Item 2
+* Security upgrades
 * Item x
 
 Here are changes we plan to implement in the next sprint:
 * Weekly commits
-* Item 2
+* Heat tracker map 
 * Item x
