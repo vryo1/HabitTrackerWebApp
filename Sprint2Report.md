@@ -8,6 +8,7 @@
 * Feature 5: Habit completion tracking with streak updates
 * Feature 6: Registered Habit and Completion models in Django admin panel
 * Feature 7: Secured credentials using envrionment variables
+* Feature 8: Updated signup UI
   
 ## Work Summary (Developer Facing)
 Provide a one paragraph synposis of what your team accomplished this sprint. Don't
