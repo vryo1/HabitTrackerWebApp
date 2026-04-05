@@ -49,7 +49,7 @@ sprint, for quality:
 
 ## Retrospective Summary
 Here's what went well:
-* Item 1
+* We coordinated backend auth logic and frontend template updates early, which made testing and integration faster.
 * Item 2
 * Item x
 
