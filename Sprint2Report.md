@@ -13,7 +13,8 @@
 ## Work Summary (Developer Facing)
 On the backend, habit completion tracking was implemented allowing users to mark habits as done for the day, with duplicate prevention handled through Django's get_or_create method. 
 The database was migrated from local PostgreSQL to a remotely hosted Supabase instance, eliminating the local set up requirement for all team members. 
-Habit and Completion models were also registered in the Django admin panel for easier data management. 
+Habit and Completion models were also registered in the Django admin panel for easier data management.
+Sign up UI was also updated to match Login UI, including font, color and overall theme.
 
 ## Unfinished Work
 * All sprint 2 issues were completed.
