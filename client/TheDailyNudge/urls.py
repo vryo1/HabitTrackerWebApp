@@ -28,4 +28,5 @@ urlpatterns = [
     path('managehabits/', views.manage_habits, name='managehabits'),
     path('managehabits/edit/<int:habit_id>/', views.edit_habit, name='edit_habit'),
     path('managehabits/delete/<int:habit_id>/', views.delete_habit, name='delete_habit'),
+    path('dashboard/complete/<int:habit_id>/', views.complete_habit, name='complete_habit'),
 ]
