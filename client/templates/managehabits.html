@@ -1,189 +1,375 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Manage Habits</title>
+    <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Habits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
 
-    <style>
-        .modal {
-            display: none; 
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
+  <style>
+    :root {
+      --bg: #f7f2e9;
+      --bg-accent: #efe6da;
+      --card: #fffdf8;
+      --text-main: #16243a;
+      --text-muted: #4a5972;
+      --input-border: #cdd8df;
+      --input-focus: #2d7a73;
+      --button-bg: #2e7f78;
+      --button-hover: #276c66;
+      --button-text: #f6f9f8;
+      --error-bg: #f9e2df;
+      --error-text: #8d2d24;
+      --success-bg: #e2f0ee;
+      --success-text: #1a5c55;
+    }
 
-        .modal-content {
-            position: relative;
-            background-color: white;
-            width: 400px;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 8px;
-        }
+    * { box-sizing: border-box; }
 
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      font-family: "Source Sans 3", sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at 12% 16%, rgba(46, 127, 120, 0.11), transparent 34%),
+        radial-gradient(circle at 82% 78%, rgba(22, 36, 58, 0.08), transparent 37%),
+        linear-gradient(165deg, var(--bg) 0%, var(--bg-accent) 100%);
+    }
 
-        .close:hover {
-            color: red;
-        }
+    .page-card {
+      width: min(560px, 100%);
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid rgba(22, 36, 58, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 24px 48px rgba(22, 36, 58, 0.14);
+      padding: 2.1rem 2rem 1.9rem;
+    }
 
-        .habit-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+    .eyebrow {
+      margin: 0 0 0.5rem;
+      color: var(--button-bg);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
 
-        .habit-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            box-sizing: border-box;
-        }
-        
-        .habit-actions {
-            display: flex;
-            gap: 8px;
-        }
+    h1 {
+      margin: 0 0 1.5rem;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.45rem, 3vw, 1.7rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
 
-        
-    </style>
+    .habit-list { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+
+    .habit-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--input-border);
+      border-radius: 11px;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+
+    .habit-info .habit-name { font-weight: 600; font-size: 0.97rem; }
+    .habit-info .habit-freq { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+    .habit-actions { display: flex; gap: 8px; }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-primary { background: var(--button-bg); color: var(--button-text); }
+    .btn-primary:hover { background: var(--button-hover); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--input-border);
+    }
+    .btn-ghost:hover { background: var(--bg-accent); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--error-text);
+      border: 1px solid rgba(141, 45, 36, 0.25);
+    }
+    .btn-danger:hover { background: var(--error-bg); }
+
+    .empty { color: var(--text-muted); margin-bottom: 1.25rem; }
+
+    .messages { margin-bottom: 1rem; }
+    .message {
+      padding: 0.7rem 0.8rem;
+      border-radius: 11px;
+      font-weight: 600;
+      font-size: 0.93rem;
+      margin-bottom: 0.5rem;
+    }
+    .message.success { background: var(--success-bg); color: var(--success-text); border: 1px solid rgba(26, 92, 85, 0.2); }
+    .message.error   { background: var(--error-bg);   color: var(--error-text);   border: 1px solid rgba(141, 45, 36, 0.2); }
+
+    .nav-link {
+      display: inline-block;
+      margin-top: 1.25rem;
+      color: var(--button-bg);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .nav-link:hover { text-decoration: underline; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(22, 36, 58, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.open { display: flex; }
+
+    .modal-content {
+      background: var(--card);
+      border: 1px solid rgba(22, 36, 58, 0.1);
+      border-radius: 16px;
+      padding: 1.75rem;
+      width: min(400px, 90vw);
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin: 0 0 1.25rem;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.2rem;
+    }
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      line-height: 1;
+    }
+    .close:hover { color: var(--error-text); }
+
+    label {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      border: 1px solid var(--input-border);
+      border-radius: 11px;
+      background: #fff;
+      color: var(--text-main);
+      font: inherit;
+      font-size: 1rem;
+      padding: 0.78rem 0.85rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(45, 122, 115, 0.17);
+    }
+
+    .btn-full { width: 100%; padding: 0.8rem 1rem; font-size: 1rem; }
+
+    @media (max-width: 540px) {
+      body { padding: 0.9rem; }
+      .page-card { padding: 1.65rem 1.2rem 1.45rem; border-radius: 16px; }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- Habit List -->
-<h2>Your Habits</h2>
-{% if habits %}
-<ul class="habit-list">
-    {% for habit in habits %}
-    <li class="habit-item">
-        <span><strong>{{ habit.name }}</strong> - every {{ habit.frequency }} day(s)</span>
-        <div class="habit-actions">
-            <button onclick="openEditModal(this)" 
-                    data-url="{% url 'edit_habit' habit.id %}"
-                    data-name="{{ habit.name|escapejs }}"
-                    data-frequency="{{ habit.frequency }}">
-                Edit
-            </button>
-            <form method="POST" action="{% url 'delete_habit' habit.id %}"
-                onsubmit="return confirm('Delete {{ habit.name|escapejs }}?')">
-                {% csrf_token %}
-                <button type="submit">Delete</button>
-            </form>
-        </div>
-    </li>
-{% endfor %}
-</ul>
-{% else %}
-    <p>No habits yet. Add one below!</p>
-{% endif %}
+<div class="page-card">
+  <p class="eyebrow">The Daily Nudge</p>
+  <h1>Your Habits</h1>
 
-<!-- Django Messages -->
 {% if messages %}
 <div class="messages">
-    {% for message in messages %}
-        <div class="message {{ message.tags }}">
-            {{ message }}
-        </div>
-    {% endfor %}
+  {% for message in messages %}
+    <div class="message {{ message.tags }}">
+      {{ message }}
+      <button onclick="this.parentElement.remove()" style="
+        float: right;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        line-height: 1;
+        color: inherit;
+        opacity: 0.6;
+        padding: 0;
+        margin-left: 0.5rem;
+      ">&times;</button>
+    </div>
+  {% endfor %}
 </div>
 {% endif %}
 
-<!-- Add Habit Button -->
-<p><button id="openModal">Add Habit</button><p>
+  {% if habits %}
+  <ul class="habit-list">
+    {% for habit in habits %}
+    <li class="habit-item">
+      <div class="habit-info">
+        <div class="habit-name">{{ habit.name }}</div>
+        <div class="habit-freq">every {{ habit.frequency }} day(s)</div>
+      </div>
+      <div class="habit-actions">
+        <button class="btn btn-ghost"
+                onclick="openEditModal(this)"
+                data-url="{% url 'edit_habit' habit.id %}"
+                data-name="{{ habit.name|escapejs }}"
+                data-frequency="{{ habit.frequency }}">
+          Edit
+        </button>
+        <form method="POST" action="{% url 'delete_habit' habit.id %}" style="margin:0;">
+          {% csrf_token %}
+          <button type="button" class="btn btn-danger"
+                  onclick="openDeleteModal(this)"
+                  data-name="{{ habit.name|escapejs }}">
+            Delete
+          </button>
+        </form>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p class="empty">No habits yet. Add one below!</p>
+  {% endif %}
+
+  <button class="btn btn-primary" id="openModal">+ Add Habit</button>
+  <a class="nav-link" href="{% url 'dashboard' %}" style="margin-left: 1rem;">Dashboard</a>
+</div>
 
 <!-- Add Habit Modal -->
 <div id="habitModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h2>Add New Habit</h2>
-
-        <form method="POST" action="{% url 'managehabits' %}">
-            {% csrf_token %}
-
-            <label>Habit Name:</label><br>
-            <input type="text" name="name" required><br><br>
-
-            <label>Frequency (1 = daily, 7 = weekly):</label><br>
-            <input type="number" name="frequency" min="1" value="1" required><br><br>
-
-            <button type="submit">Add</button>
-        </form>
-    </div>
+  <div class="modal-content">
+    <button class="close" id="closeModal">&times;</button>
+    <h2>Add New Habit</h2>
+    <form method="POST" action="{% url 'managehabits' %}">
+      {% csrf_token %}
+      <label for="addName">Habit Name</label>
+      <input type="text" id="addName" name="name" required>
+      <label for="addFreq">Frequency (1 = daily, 7 = weekly)</label>
+      <input type="number" id="addFreq" name="frequency" min="1" value="1" required>
+      <button type="submit" class="btn btn-primary btn-full">Add</button>
+    </form>
+  </div>
 </div>
 
 <!-- Edit Habit Modal -->
 <div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeEditModal">&times;</span>
-        <h2>Edit Habit</h2>
+  <div class="modal-content">
+    <button class="close" id="closeEditModal">&times;</button>
+    <h2>Edit Habit</h2>
+    <form method="POST" id="editForm" action="">
+      {% csrf_token %}
+      <label for="editName">Habit Name</label>
+      <input type="text" id="editName" name="name" required>
+      <label for="editFrequency">Frequency (1 = daily, 7 = weekly)</label>
+      <input type="number" id="editFrequency" name="frequency" min="1" required>
+      <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+    </form>
+  </div>
+</div>
 
-        <form method="POST" id="editForm" action="">
-            {% csrf_token %}
-
-            <label>Habit Name:</label><br>
-            <input type="text" name="name" id="editName" required><br><br>
-            
-            <label>Frequency (1 = daily, 7 = weekly):</label><br>
-            <input type="number" name="frequency" id="editFrequency" min="1" required><br><br>
-            
-            <button type="submit">Save Changes</button>
-        </form>
+<!-- Delete Confirm Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h2>Delete Habit</h2>
+    <p class="delete-modal-body">
+      Are you sure you want to delete <strong id="deleteHabitName"></strong>? This cannot be undone.
+    </p>
+    <div class="delete-modal-actions">
+      <button class="btn btn-ghost" id="cancelDeleteBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
     </div>
+  </div>
 </div>
 
 <script>
-    const modal = document.getElementById("habitModal");
-    const openBtn = document.getElementById("openModal");
-    const closeBtn = document.getElementById("closeModal");
+  const modal = document.getElementById("habitModal");
+  const editModal = document.getElementById("editModal");
+  const deleteModal = document.getElementById("deleteModal");
 
-    const editModal = document.getElementById("editModal");
-    const closeEditBtn = document.getElementById("closeEditModal");
+  let pendingDeleteForm = null;
 
-    openBtn.onclick = function() {
-        modal.style.display = "block";
-    }
+  document.getElementById("openModal").onclick = () => modal.classList.add("open");
+  document.getElementById("closeModal").onclick = () => modal.classList.remove("open");
+  document.getElementById("closeEditModal").onclick = () => editModal.classList.remove("open");
+  document.getElementById("cancelDeleteBtn").onclick = () => closeDeleteModal();
+  document.getElementById("confirmDeleteBtn").onclick = () => {
+    if (pendingDeleteForm) pendingDeleteForm.submit();
+  };
 
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
-    }
-    closeEditBtn.onclick = function() {
-        editModal.style.display = "none"
-    }
+  window.onclick = (e) => {
+    if (e.target === modal) modal.classList.remove("open");
+    if (e.target === editModal) editModal.classList.remove("open");
+    if (e.target === deleteModal) closeDeleteModal();
+  };
 
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-        if (event.target == editModal) {
-            editModal.style.display = "none";
-        }
-    }
+  function openEditModal(btn) {
+    document.getElementById("editForm").action = btn.dataset.url;
+    document.getElementById("editName").value = btn.dataset.name;
+    document.getElementById("editFrequency").value = btn.dataset.frequency;
+    editModal.classList.add("open");
+  }
 
+    function openDeleteModal(btn) {
+    pendingDeleteForm = btn.closest("form");
+    document.getElementById("deleteHabitName").textContent = btn.dataset.name;
+    deleteModal.classList.add("open");
+  }
 
+  function closeDeleteModal() {
+    deleteModal.classList.remove("open");
+    pendingDeleteForm = null;
+  }
 
-    function openEditModal(btn) {
-        document.getElementById("editForm").action = btn.dataset.url;
-        document.getElementById("editName").value = btn.dataset.name;
-        document.getElementById("editFrequency").value = btn.dataset.frequency;
-        editModal.style.display = "block";
-    }
-
+  setTimeout(() => {
+    document.querySelectorAll('.message').forEach(el => {
+      el.style.transition = 'opacity 0.5s ease';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 500);
+    });
+  }, 3000);
 </script>
-
-<a href="{% url 'dashboard' %}">Dashboard</a>
 
 </body>
 </html>

@@ -127,6 +127,7 @@ def edit_habit(request, habit_id):
 
         messages.success(request, "Habit updated successfully!")
         return redirect('managehabits')
+    return redirect('managehabits')
     
 @login_required(login_url='login')
 def delete_habit(request, habit_id):
