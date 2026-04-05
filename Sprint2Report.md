@@ -44,10 +44,12 @@ Here's what went well:
 * Item 1
 * Item 2
 * Item x
+
 Here's what we'd like to improve:
 * More timely commits every week
 * Item 2
 * Item x
+
 Here are changes we plan to implement in the next sprint:
 * Weekly commits
 * Item 2
