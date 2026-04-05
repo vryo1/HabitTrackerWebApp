@@ -15,6 +15,7 @@ On the backend, habit completion tracking was implemented allowing users to mark
 The database was migrated from local PostgreSQL to a remotely hosted Supabase instance, eliminating the local set up requirement for all team members. 
 Habit and Completion models were also registered in the Django admin panel for easier data management.
 Sign up UI was also updated to match Login UI, including font, color and overall theme.
+On the backend, logic for editing and deleting a habit was added before working on connecting it to the frontend, along with updating the style of the frontend to match the Login UI.
 
 ## Unfinished Work
 * All sprint 2 issues were completed.
