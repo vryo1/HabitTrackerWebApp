@@ -149,7 +149,7 @@ def complete_habit(request, habit_id):
         if created : 
             messages.success(request, f"{habit.name} marked as complete!")
         else:
-            messages.success(request, f"{habit.name} already completed today.")
+            messages.info(request, f"{habit.name} already completed today.")
     
     return redirect('dashboard')
 
