@@ -18,3 +18,10 @@ class Completion(models.Model):
 
     def __str__(self):
         return f"{self.habit.name} - {self.date}"
+    
+class Pet(models.Model):
+    habit = models.OneToOneField(Habit, on_delete=models.CASCADE, related_name='pet')
+    name = models.CharField(max_length=100, blank=True, default='')
+
+    def __str__(self):
+        return f"Pet for {self.habit.name} ({self.habit.user.username})"

@@ -10,6 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet" />
+    {% load static %}
 
     <style>
         :root {
@@ -79,14 +80,53 @@
         }
 
         .habit-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
             border: 1px solid var(--input-border);
             border-radius: 11px;
             margin-bottom: 8px;
             background: #fff;
+            overflow: hidden;
+        }
+
+        .habit-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+        }
+
+        .habit-left {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        /* Pet image + bobbing animation */
+        .pet-wrap {
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pet-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            animation: bob 2s ease-in-out infinite;
+        }
+
+        @keyframes bob {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
         }
 
         .habit-info .habit-name {
@@ -94,10 +134,73 @@
             font-size: 0.97rem;
         }
 
+        .pet-name-label {
+            font-size: 0.78rem;
+            color: var(--button-bg);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
         .habit-info .habit-streak {
             font-size: 0.85rem;
             color: var(--text-muted);
             margin-top: 2px;
+        }
+
+        /* Progress bar */
+        .pet-progress-wrap {
+            padding: 0 1rem 0.65rem;
+        }
+
+        .pet-progress-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .pet-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-accent);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .pet-progress-fill {
+            height: 100%;
+            background: var(--button-bg);
+            border-radius: 99px;
+            transition: width 0.4s ease;
+        }
+
+        /* Naming prompt */
+        .name-prompt {
+            padding: 0.6rem 1rem 0.75rem;
+            border-top: 1px solid var(--input-border);
+            background: #f9fffe;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .name-prompt input {
+            flex: 1;
+            border: 1px solid var(--input-border);
+            border-radius: 7px;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.88rem;
+            font-family: "Source Sans 3", sans-serif;
+            outline: none;
+        }
+
+        .name-prompt input:focus {
+            border-color: var(--input-focus);
+        }
+
+        .name-prompt span {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            white-space: nowrap;
         }
 
         .btn {
@@ -118,6 +221,11 @@
 
         .btn-primary:hover {
             background: var(--button-hover);
+        }
+
+        .btn-sm {
+            padding: 0.3rem 0.7rem;
+            font-size: 0.82rem;
         }
 
         .empty {
@@ -184,7 +292,7 @@
 <body>
     <div class="page-card">
         <p class="eyebrow">The Daily Nudge</p>
-        <h1>Welcome, {{ request.user.username }}!</h1>
+        <h1>Dashboard</h1>
 
         {% if messages %}
         <div class="messages">
@@ -192,17 +300,10 @@
             <div class="message {{ message.tags }}">
                 {{ message }}
                 <button onclick="this.parentElement.remove()" style="
-          float: right;
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-size: 1.1rem;
-          line-height: 1;
-          color: inherit;
-          opacity: 0.6;
-          padding: 0;
-          margin-left: 0.5rem;
-        ">&times;</button>
+                    float: right; background: none; border: none; cursor: pointer;
+                    font-size: 1.1rem; line-height: 1; color: inherit;
+                    opacity: 0.6; padding: 0; margin-left: 0.5rem;
+                ">&times;</button>
             </div>
             {% endfor %}
         </div>
@@ -212,19 +313,66 @@
         <ul class="habit-list">
             {% for item in habit_data %}
             <li class="habit-item">
-                <div class="habit-info">
-                    <div class="habit-name">{{ item.habit.name }}</div>
-                    <div class="habit-streak">🔥 {{ item.streak }} day streak</div>
+                <div class="habit-main">
+                    <div class="habit-left">
+                        <div class="pet-wrap">
+                            <img class="pet-img" src="{% static item.pet_image %}"
+                                alt="Pet stage {{ item.pet_stage }}" />
+                        </div>
+                        <div class="habit-info">
+                            <div class="habit-name">{{ item.habit.name }}</div>
+                            {% if item.pet.name %}
+                            <div class="pet-name-label">🐣 {{ item.pet.name }}</div>
+                            {% endif %}
+                            <div class="habit-streak">🔥 {{ item.streak }} day streak</div>
+                        </div>
+                    </div>
+                    <form method="POST" action="{% url 'complete_habit' item.habit.id %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Mark Complete</button>
+                    </form>
                 </div>
-                <form method="POST" action="{% url 'complete_habit' item.habit.id %}" style="margin:0;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Mark Complete</button>
-                </form>
+
+                <!-- Progress bar -->
+                <div class="pet-progress-wrap">
+                    <div class="pet-progress-label">
+                        {% if item.pet_stage == 1 %}Egg — {{ item.streak }}/3 days to hatchling
+                        {% elif item.pet_stage == 2 %}Hatchling — {{ item.streak }}/7 days to companion
+                        {% elif item.pet_stage == 3 %}Companion — {{ item.streak }}/14 days to guardian
+                        {% elif item.pet_stage == 4 %}Guardian — {{ item.streak }}/30 days to legend
+                        {% else %}Legend — max stage! 👑
+                        {% endif %}
+                    </div>
+                    <div class="pet-progress-bar">
+                        <div class="pet-progress-fill" style="width: {{ item.pet_progress }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Naming prompt -->
+                {% if item.needs_name %}
+                <div class="name-prompt">
+                    <span>✨ Name your pet:</span>
+                    <form method="POST" action="{% url 'name_pet' item.habit.id %}"
+                        style="display:flex;gap:0.5rem;flex:1;">
+                        {% csrf_token %}
+                        <input type="text" name="pet_name" placeholder="Enter a name..." maxlength="100" required />
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </form>
+                </div>
+                {% endif %}
             </li>
             {% endfor %}
         </ul>
         {% else %}
-        <p class="empty">You have no habits yet.</p>
+        <div style="text-align: center; padding: 1.5rem 0;">
+            <p style="font-size: 1.5rem; margin-bottom: 0.5rem;">🌱</p>
+            <p style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.4rem;">Start your journey.</p>
+            <p style="color: var(--text-muted); margin-bottom: 1.25rem;">Every streak starts with a single day. Add your
+                first habit and start building consistency.</p>
+            <a class="nav-link" href="{% url 'managehabits' %}"
+                style="background: var(--button-bg); color: var(--button-text); padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 600;">+
+                Add Your First Habit</a>
+        </div>
         {% endif %}
 
         <a class="nav-link" href="{% url 'managehabits' %}">Manage Habits</a>
@@ -240,7 +388,6 @@
             });
         }, 3000);
     </script>
-
 </body>
 
 </html>
