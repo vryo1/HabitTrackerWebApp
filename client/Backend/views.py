@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from datetime import date, timedelta
-from Backend.models import Habit, Completion
+from Backend.models import Habit, Completion, Pet
 from django.contrib import messages
 
 
@@ -63,9 +63,29 @@ def dashboard(request):
     habits = request.user.habit_set.all()
     habit_data = []
     for habit in habits:
+        streak = calculate_streak(habit)
+        pet, created = Pet.objects.get_or_create(habit=habit)
+        stage = calculate_pet_stage(streak)
+
+        if stage == 1:
+            progress = (streak / 3) * 100
+        elif stage == 2:
+            progress = ((streak - 3) / 4) * 100
+        elif stage == 3:
+            progress = ((streak - 7) / 7) * 100
+        elif stage == 4:
+            progress = ((streak - 14) / 16) * 100
+        else:
+            progress = 100
+
         habit_data.append({
             'habit': habit,
-            'streak': calculate_streak(habit),
+            'streak': streak,
+            'pet': pet,
+            'pet_stage': stage,
+            'pet_image': f'images/pets/pet_stage{stage}.png',
+            'pet_progress': min(round(progress), 100),
+            'needs_name': streak >= 3 and not pet.name,
         })
     return render(request, 'dashboard.html', {'habit_data': habit_data})
 
@@ -153,3 +173,26 @@ def complete_habit(request, habit_id):
     
     return redirect('dashboard')
 
+def calculate_pet_stage(streak):
+    if streak <= 2:
+        return 1  # egg
+    elif streak <= 6:
+        return 2  # hatchling
+    elif streak <= 13:
+        return 3  # companion
+    elif streak <= 29:
+        return 4  # guardian
+    else:
+        return 5  # legend
+
+@login_required(login_url='login')
+def name_pet(request, habit_id):
+    habit = get_object_or_404(Habit, id=habit_id, user=request.user)
+    if request.method == 'POST':
+        pet_name = request.POST.get('pet_name', '').strip()
+        if pet_name:
+            pet, _ = Pet.objects.get_or_create(habit=habit)
+            pet.name = pet_name
+            pet.save()
+            messages.success(request, f"Your pet has been named {pet_name}!")
+    return redirect('dashboard')
