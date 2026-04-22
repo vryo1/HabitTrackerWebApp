@@ -7,21 +7,36 @@ from Backend.models import Habit, Completion, Pet
 from django.contrib import messages
 
 
-# Helper function to calculate the current streak for a habit
 def calculate_streak(habit):
     today = date.today()
+    frequency = habit.frequency
+    
+    # If not yet completed today, start checking from yesterday
+    completed_today = Completion.objects.filter(habit=habit, date=today).exists()
+    current_day = today if completed_today else today - timedelta(days=1)
+    
     streak = 0
-    current_day = today
 
     while True:
         exists = Completion.objects.filter(habit=habit, date=current_day).exists()
+
         if exists:
             streak += 1
             current_day -= timedelta(days=1)
         else:
-            break
-    return streak
+            gap_end = current_day - timedelta(days=frequency - 1)
+            any_in_gap = Completion.objects.filter(
+                habit=habit,
+                date__gte=gap_end,
+                date__lte=current_day
+            ).exists()
 
+            if any_in_gap:
+                current_day -= timedelta(days=1)
+            else:
+                break
+
+    return streak
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -62,6 +77,7 @@ def logout_view(request):
 def dashboard(request):
     habits = request.user.habit_set.all()
     habit_data = []
+    today = date.today()
     for habit in habits:
         streak = calculate_streak(habit)
         pet, created = Pet.objects.get_or_create(habit=habit)
@@ -77,7 +93,7 @@ def dashboard(request):
             progress = ((streak - 14) / 16) * 100
         else:
             progress = 100
-
+        completed_today = Completion.objects.filter(habit=habit, date=today).exists()
         habit_data.append({
             'habit': habit,
             'streak': streak,
@@ -86,6 +102,7 @@ def dashboard(request):
             'pet_image': f'images/pets/pet_stage{stage}.png',
             'pet_progress': min(round(progress), 100),
             'needs_name': streak >= 3 and not pet.name,
+            'completed_today': completed_today,
         })
     return render(request, 'dashboard.html', {'habit_data': habit_data})
 
