@@ -94,6 +94,8 @@ def dashboard(request):
         else:
             progress = 100
         completed_today = Completion.objects.filter(habit=habit, date=today).exists()
+        completions = list(Completion.objects.filter(habit=habit).values_list('date', flat=True))
+        completion_set = [d.isoformat() for d in completions]
         habit_data.append({
             'habit': habit,
             'streak': streak,
@@ -103,6 +105,7 @@ def dashboard(request):
             'pet_progress': min(round(progress), 100),
             'needs_name': streak >= 3 and not pet.name,
             'completed_today': completed_today,
+            'completion_dates': completion_set,
         })
     return render(request, 'dashboard.html', {'habit_data': habit_data})
 

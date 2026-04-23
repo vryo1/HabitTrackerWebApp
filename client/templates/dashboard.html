@@ -223,6 +223,11 @@
             background: var(--button-hover);
         }
 
+        .btn-done {
+            background: #d1d5db;
+            color: #6b7280;
+        }
+
         .btn-sm {
             padding: 0.3rem 0.7rem;
             font-size: 0.82rem;
@@ -286,8 +291,57 @@
                 border-radius: 16px;
             }
         }
+
+        .heatmap-wrap {
+            padding: 0.5rem 1rem 0.75rem;
+            border-top: 1px solid var(--input-border);
+        }
+
+        .heatmap-grid {
+            display: flex;
+            gap: 3px;
+        }
+
+        .heatmap-col {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .heatmap-cell {
+            width: 11px;
+            height: 11px;
+            border-radius: 2px;
+            background: var(--bg-accent);
+        }
+
+        .heatmap-cell.filled {
+            background: var(--button-bg);
+        }
+
+        .heatmap-inner {
+            display: flex;
+            gap: 3px;
+        }
+
+        .heatmap-days {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-right: 2px;
+        }
+
+        .heatmap-day-label {
+            height: 11px;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            line-height: 11px;
+            text-align: center;
+        }
     </style>
 </head>
+
+
 
 <body>
     <div class="page-card">
@@ -344,7 +398,11 @@
                     </div>
                     <form method="POST" action="{% url 'complete_habit' item.habit.id %}" style="margin:0;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Mark Complete</button>
+                        <button type="submit" 
+                            class="btn {% if item.completed_today %}btn-done{% else %}btn-primary{% endif %}"
+                            {% if item.completed_today %}disabled{% endif %}>
+                            {% if item.completed_today %}Completed{% else %}Mark Complete{% endif %}
+                        </button>
                     </form>
                 </div>
 
@@ -362,6 +420,25 @@
                         <div class="pet-progress-fill" style="width: {{ item.pet_progress }}%;"></div>
                     </div>
                 </div>
+
+                <!-- Heatmap -->
+                <div class="heatmap-wrap">
+                <div class="heatmap-inner">
+                    <div class="heatmap-days">
+                        <div class="heatmap-day-label">M</div>
+                        <div class="heatmap-day-label">T</div>
+                        <div class="heatmap-day-label">W</div>
+                        <div class="heatmap-day-label">T</div>
+                        <div class="heatmap-day-label">F</div>
+                        <div class="heatmap-day-label">S</div>
+                        <div class="heatmap-day-label">S</div>
+                    </div>
+                    <div class="heatmap-grid" id="heatmap-{{ item.habit.id }}"
+                        data-dates="{{ item.completion_dates|join:',' }}"
+                        data-created="{{ item.habit.created_at|date:'Y-m-d' }}">
+                    </div>
+                </div>
+            </div>
 
                 <!-- Naming prompt -->
                 {% if item.needs_name %}
@@ -393,6 +470,42 @@
         <a class="nav-link" href="{% url 'managehabits' %}">Manage Habits</a>
         <a class="nav-link" href="{% url 'logout' %}" style="margin-left: 1rem;">Logout</a>
     </div>
+
+    <script>
+        document.querySelectorAll('.heatmap-grid').forEach(grid => {
+            const raw = grid.dataset.dates;
+            const filled = new Set(raw ? raw.split(',') : []);
+            const createdStr = grid.dataset.created;
+
+            const cellSize = 11;
+            const gap = 3;
+            const availableWidth = grid.parentElement.clientWidth - 8;
+            const numCols = Math.floor(availableWidth / (cellSize + gap));
+            const totalDays = numCols * 7;
+
+            const startDate = new Date(createdStr);
+            const dayOfWeek = startDate.getDay();
+            const offset = (dayOfWeek + 6) % 7;
+            startDate.setDate(startDate.getDate() - offset);
+
+            let col = null;
+            for (let i = 0; i < totalDays; i++) {
+                const d = new Date(startDate);
+                d.setDate(startDate.getDate() + i);
+
+                if (i % 7 === 0) {
+                    col = document.createElement('div');
+                    col.className = 'heatmap-col';
+                    grid.appendChild(col);
+                }
+
+                const iso = d.toISOString().split('T')[0];
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell' + (filled.has(iso) ? ' filled' : '');
+                col.appendChild(cell);
+            }
+        });
+    </script>
 
     <!-- <script>
         setTimeout(() => {
