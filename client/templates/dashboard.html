@@ -338,6 +338,24 @@
             line-height: 11px;
             text-align: center;
         }
+
+        .habit-due {
+            font-size: 0.8rem;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .heatmap-cell.missed {
+            background: #e88080;
+        }
+
+        .due-today {
+            color: #c0392b;
+        }
+
+        .due-later {
+            color: var(--text-muted);
+        }
     </style>
 </head>
 
@@ -366,7 +384,7 @@
         {% if habit_data %}
 
         {% for item in habit_data %}
-        {% if not item.completed_today %}
+        {% if not item.completed_today and item.days_until_due == 0 %}
         <div class="message info" style="margin-bottom: 0.5rem;">
             ⏰ Don't break your streak! Complete <strong>{{ item.habit.name }}</strong> today
             {% if item.streak > 0 %} — you're on a {{ item.streak }} day streak{% endif %}.
@@ -394,6 +412,13 @@
                             <div class="pet-name-label">🐣 {{ item.pet.name }}</div>
                             {% endif %}
                             <div class="habit-streak">🔥 {{ item.streak }} day streak</div>
+                            <div class="habit-due {% if item.days_until_due == 0 %}due-today{% else %}due-later{% endif %}">
+                                {% if item.days_until_due == 0 %}
+                                    Due today
+                                {% else %}
+                                    Due in {{ item.days_until_due }} day{{ item.days_until_due|pluralize }}
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     <form method="POST" action="{% url 'complete_habit' item.habit.id %}" style="margin:0;">
@@ -435,7 +460,8 @@
                     </div>
                     <div class="heatmap-grid" id="heatmap-{{ item.habit.id }}"
                         data-dates="{{ item.completion_dates|join:',' }}"
-                        data-created="{{ item.habit.created_at|date:'Y-m-d' }}">
+                        data-created="{{ item.habit.created_at|date:'Y-m-d' }}"
+                        data-frequency="{{ item.habit.frequency }}">
                     </div>
                 </div>
             </div>
@@ -476,6 +502,7 @@
             const raw = grid.dataset.dates;
             const filled = new Set(raw ? raw.split(',') : []);
             const createdStr = grid.dataset.created;
+            const frequency = parseInt(grid.dataset.frequency);
 
             const cellSize = 11;
             const gap = 3;
@@ -483,15 +510,47 @@
             const numCols = Math.floor(availableWidth / (cellSize + gap));
             const totalDays = numCols * 7;
 
-            const startDate = new Date(createdStr);
-            const dayOfWeek = startDate.getDay();
-            const offset = (dayOfWeek + 6) % 7;
-            startDate.setDate(startDate.getDate() - offset);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayIso = today.toISOString().slice(0, 10);
+
+            const createdDate = new Date(createdStr + 'T00:00:00');
+            const missedDates = new Set();
+
+            let windowStart = new Date(createdDate);
+            while (windowStart < today) {
+                const windowEnd = new Date(windowStart);
+                windowEnd.setDate(windowEnd.getDate() + frequency - 1);
+
+                const effectiveEnd = windowEnd < today ? windowEnd : new Date(today);
+                effectiveEnd.setDate(effectiveEnd.getDate() - 1);
+
+                const anyCompleted = [...filled].some(c => {
+                    const cd = new Date(c + 'T00:00:00');
+                    return cd >= windowStart && cd <= windowEnd;
+                });
+
+                if (!anyCompleted) {
+                    const d = new Date(windowStart);
+                    while (d <= effectiveEnd) {
+                        missedDates.add(d.toISOString().slice(0, 10));
+                        d.setDate(d.getDate() + 1);
+                    }
+                }
+
+                windowStart.setDate(windowStart.getDate() + frequency);
+            }
+
+            const gridStart = new Date(createdDate);
+            const dow = gridStart.getDay();
+            const offset = (dow + 6) % 7;
+            gridStart.setDate(gridStart.getDate() - offset);
 
             let col = null;
             for (let i = 0; i < totalDays; i++) {
-                const d = new Date(startDate);
-                d.setDate(startDate.getDate() + i);
+                const d = new Date(gridStart);
+                d.setDate(gridStart.getDate() + i);
+                const iso = d.toISOString().slice(0, 10);
 
                 if (i % 7 === 0) {
                     col = document.createElement('div');
@@ -499,9 +558,14 @@
                     grid.appendChild(col);
                 }
 
-                const iso = d.toISOString().split('T')[0];
                 const cell = document.createElement('div');
-                cell.className = 'heatmap-cell' + (filled.has(iso) ? ' filled' : '');
+                if (filled.has(iso)) {
+                    cell.className = 'heatmap-cell filled';
+                } else if (iso < todayIso && missedDates.has(iso)) {
+                    cell.className = 'heatmap-cell missed';
+                } else {
+                    cell.className = 'heatmap-cell';
+                }
                 col.appendChild(cell);
             }
         });

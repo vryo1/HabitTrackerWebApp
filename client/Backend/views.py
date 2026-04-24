@@ -73,6 +73,20 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+def calculate_due(habit):
+    today = date.today()
+    frequency = habit.frequency
+
+    last_completion = Completion.objects.filter(habit=habit).order_by('-date').first()
+
+    if not last_completion:
+        return 0 
+
+    days_since = (today - last_completion.date).days
+    days_until_due = frequency - days_since
+
+    return max(days_until_due, 0)
+
 @login_required(login_url='login')
 def dashboard(request):
     habits = request.user.habit_set.all()
@@ -96,6 +110,7 @@ def dashboard(request):
         completed_today = Completion.objects.filter(habit=habit, date=today).exists()
         completions = list(Completion.objects.filter(habit=habit).values_list('date', flat=True))
         completion_set = [d.isoformat() for d in completions]
+        days_until_due = calculate_due(habit)
         habit_data.append({
             'habit': habit,
             'streak': streak,
@@ -106,6 +121,7 @@ def dashboard(request):
             'needs_name': streak >= 3 and not pet.name,
             'completed_today': completed_today,
             'completion_dates': completion_set,
+            'days_until_due': days_until_due,
         })
     return render(request, 'dashboard.html', {'habit_data': habit_data})
 
