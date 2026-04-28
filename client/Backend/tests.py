@@ -119,6 +119,12 @@ class HabitViewTests(TestCase):
         response = self.client.post(reverse('managehabits'), {'name': 'New Habit', 'frequency': 1})
         self.assertTrue(Habit.objects.filter(user=self.user, name='New Habit').exists())
 
+    def test_edit_habit(self):
+        self.client.post(reverse('edit_habit', args=[self.habit.id]), {'name': 'Updated Habit','frequency': 3})
+        self.habit.refresh_from_db()
+        self.assertEqual(self.habit.name, 'Updated Habit')
+        self.assertEqual(self.habit.frequency, 3)
+
     def test_delete_habit(self):
         response = self.client.post(reverse('delete_habit', args=[self.habit.id]))
         self.assertFalse(Habit.objects.filter(id=self.habit.id).exists())
