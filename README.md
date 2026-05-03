@@ -57,22 +57,36 @@ DATABASE_URL=ask-a-team-member-for-the-supabase-url
 cd client
 python manage.py migrate
 ```
-5. **Start the app**
+6. **Run the development server**
 ```
 python manage.py runserver
 ```
 The app will be available at `http://127.0.0.1:8000/`
+
+7. **Run Unit tests**
+```
+python manage.py test Backend --keepdb
+```
+All 24 tests should pass. The `--keepdb` flag preserves the test database between runs to avoid cleanup conflicts with Supabase.
 
 ## Functionality
 **Login Page** - Existing users can log in with their username and password
 
 **Create Account Page** - New users can register by choosing a username and password.
 
-**Dashboard** - This is the main page after logging in, where you can view all of your current habits. Each habit is displayed with its name and streak.
+**Dashboard** - The main page after logging in. Each habit displays its name, current streak, pet companion that evolves based on streak length, a progress bar toward the next pet stage, and a heatmap showing completed and missed days. Notification banners remind you to complete habits that are due today.
 
 **Manage Habits Page** - Use this page to add new habits to the tracker. Press "Add Habit" then fill out the habit details and press "Add" to save it. The habit will then appear on the dashboard.
 
+## Testing
+Unit tests are located in `client/Backend/tests.py` and cover streak calculation, pet stage logic, due date calculation, habit CRUD operations, and pet naming. To run:
+```
+cd client
+python manage.py test Backend --keepdb
+```
+Expected output: `Ran 24 tests OK
+`
 ## Known Problems
-
+The app is hosted on Supabase's free tier, which pauses the database after periods of inactivity. If the app appears unresponsive, visit the Supabase dashboard to resume the project.
 
 ## Additional Documentation
