@@ -85,7 +85,7 @@ def calculate_due(habit):
     days_since = (today - last_completion.date).days
     days_until_due = frequency - days_since
 
-    return max(days_until_due, 0)
+    return days_until_due
 
 @login_required(login_url='login')
 def dashboard(request):
