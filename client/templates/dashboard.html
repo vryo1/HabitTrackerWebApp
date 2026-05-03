@@ -353,6 +353,11 @@
             color: #c0392b;
         }
 
+        .overdue {
+            color: #c0392b;
+            font-weight: 700;
+        }
+
         .due-later {
             color: var(--text-muted);
         }
@@ -412,8 +417,10 @@
                             <div class="pet-name-label">🐣 {{ item.pet.name }}</div>
                             {% endif %}
                             <div class="habit-streak">🔥 {{ item.streak }} day streak</div>
-                            <div class="habit-due {% if item.days_until_due == 0 %}due-today{% else %}due-later{% endif %}">
-                                {% if item.days_until_due == 0 %}
+                            <div class="habit-due {% if item.days_until_due == 0 %}due-today{% elif item.days_until_due < 0 %}overdue{% else %}due-later{% endif %}">
+                                {% if item.days_until_due < 0 %}
+                                    Overdue by {{ item.days_until_due|floatformat:0|cut:"-" }} day{% if item.days_until_due|floatformat:0|cut:"-" != "1" %}s{% endif %}
+                                {% elif item.days_until_due == 0 %}
                                     Due today
                                 {% else %}
                                     Due in {{ item.days_until_due }} day{{ item.days_until_due|pluralize }}
@@ -516,30 +523,18 @@
 
             const createdDate = new Date(createdStr + 'T00:00:00');
             const missedDates = new Set();
+            const sortedCompletions = [...filled].sort((a, b) => new Date(a) - new Date(b));
 
-            let windowStart = new Date(createdDate);
-            while (windowStart < today) {
-                const windowEnd = new Date(windowStart);
-                windowEnd.setDate(windowEnd.getDate() + frequency - 1);
-
-                const effectiveEnd = windowEnd < today ? windowEnd : new Date(today);
-                effectiveEnd.setDate(effectiveEnd.getDate() - 1);
-
-                const anyCompleted = [...filled].some(c => {
-                    const cd = new Date(c + 'T00:00:00');
-                    return cd >= windowStart && cd <= windowEnd;
-                });
-
-                if (!anyCompleted) {
-                    const d = new Date(windowStart);
-                    while (d <= effectiveEnd) {
-                        missedDates.add(d.toISOString().slice(0, 10));
-                        d.setDate(d.getDate() + 1);
-                    }
+            sortedCompletions.forEach((comp, i) => {
+                let due = new Date(comp + 'T00:00:00');
+                due.setDate(due.getDate() + frequency);
+                const nextComp = sortedCompletions[i + 1] ? new Date(sortedCompletions[i + 1] + 'T00:00:00') : today;
+                
+                while (due < nextComp && due < today) {
+                    missedDates.add(due.toISOString().slice(0, 10));
+                    due.setDate(due.getDate() + frequency);
                 }
-
-                windowStart.setDate(windowStart.getDate() + frequency);
-            }
+            });
 
             const gridStart = new Date(createdDate);
             const dow = gridStart.getDay();
