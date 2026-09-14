@@ -29,8 +29,8 @@ As of now, TheDailyNudge-HabitTrackerWebApp is a Django web app backed by Postgr
 - tzdata==2025.3: Time zone database for consistent date/time handling.
 ### Installation Steps
 1. **Clone the repository**
-```
-git clone https://github.com/WSU-CPTS322-SP26/HabitTrackerWebApp.git
+```bash
+git clone https://github.com/vryo1/HabitTrackerWebApp.git
 cd HabitTrackerWebApp
 ```
 2. **Create and activate virtual environment**
